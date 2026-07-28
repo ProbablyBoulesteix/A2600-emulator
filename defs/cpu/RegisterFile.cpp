@@ -1,6 +1,9 @@
 // Registers.h
+
 #pragma once
-#include <cstdint>
+
+#include <cpu/RegisterFile.h>
+#include <stdint.h>
 
 class RegisterFile {
 public:
@@ -26,7 +29,7 @@ public:
         void IncrementPC(int PCoffset = 2) {
             PC = PC + PCoffset; //classically, this is PC +2
             // extract bit fields
-            PCH = PC & 0xFF00; // AND with 0b1111.1111.0000.0000 to get upper byte
+            PCH = (PC >> 8) & 0x00FF; // AND with 0b1111.1111.0000.0000 to get upper byte
             PCL = PC & 0x00FF; // AND with 0b000.0000.1111.1111 to get lower byte
         };
 

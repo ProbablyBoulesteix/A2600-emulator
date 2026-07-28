@@ -10,4 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Internal dependencies/imports
 target_include_directories(A2600_emulator PRIVATE include)
+target_include_directories(A2600_emulator PRIVATE defs)
+
 

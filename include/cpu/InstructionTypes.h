@@ -9,7 +9,6 @@
 #pragma once
 #include <cstdlib>
 #include <cstdint>
-#include <cpu/InstructionOps.h>
 #include <cpu/CPU.h>
 
 
@@ -119,6 +118,8 @@ struct Instruction{ // Encode all 6502 instruction metadata here
     // Register level information, write expressions like: static_cast<FlagMask>(StatusFlag::N) | static_cast<FlagMask>(StatusFlag::Z)
     FlagMask readFlags;
     FlagMask writeFlags;
+    ChipType CPUBehavior = ChipType::NMOS6502; //NOTE: the CMOS and NMOS variants of the 6502 perform slightly differently, as does the later variants. 
+    //The NMOS variant is notably bugged for JMP indirect instructions, which needs to be accounted for.
     void (CPU::*execute)(const Instruction&); // Structure: this is a pointer to a method in the main CPU class which takes in an instruction
 };
 
