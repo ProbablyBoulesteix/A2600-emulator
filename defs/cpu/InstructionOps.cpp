@@ -12,7 +12,7 @@ std::array<Instruction, 256> makeOpCodeTable(){
     std::array<Instruction, 256> map{};
 
     //FIXME: All cpu instruction pointers are currently blanked out due to them not being defined. Fix later.
-      // ADC (Add Memory to Accumulator with Carry)//
+    // ADC (Add Memory to Accumulator with Carry)//
     // A + M + C -> A, C
     // N Z C I D V
     // + + + - - +

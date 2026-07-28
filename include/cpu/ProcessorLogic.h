@@ -9,3 +9,5 @@
 
 std::array<Instruction, 256> makeOpCodeTable(); 
 using OpCodeTableMap = std::array<Instruction, 256>;
+
+class InstructionDecoder {};

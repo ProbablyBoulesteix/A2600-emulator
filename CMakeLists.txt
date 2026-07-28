@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.18)
 project(A2600_emulator LANGUAGES CXX)
 
 # Settings
@@ -8,8 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # External dependencies
 
+# Source files
+add_executable(A2600_emulator defs/cpu/InstructionOps.cpp)
+
 # Internal dependencies/imports
-target_include_directories(A2600_emulator PRIVATE include)
-target_include_directories(A2600_emulator PRIVATE defs)
+target_include_directories(A2600_emulator PRIVATE include, defs)
+
 
 
