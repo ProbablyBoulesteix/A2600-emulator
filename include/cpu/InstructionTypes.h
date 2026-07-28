@@ -28,11 +28,11 @@ enum AddressingMode{
     Implied,
     Indirect,
     IndirectXIndexed,
-    IndirectYindexed,
+    IndirectYIndexed,
     Relative,
     ZeroPage,
     ZeroPageXIndexed,
-    ZeroPageYindexed
+    ZeroPageYIndexed
 };
 
 enum class StatusFlag : uint8_t {
