@@ -14,7 +14,7 @@ This project is an attempt at building and testing an Atari 2600 console emulato
 ### CPU Emulation
 For the CPU portion, this project uses much of the reference material found here: https://www.masswerk.at/6502/6502_instruction_set.html.
 
-Note that the Atari 2600 uses the 6507, a variant of the NMOS 6502, stripped of BCD capabilities and equipped with a 12bit (4096B) address bus (as opposed to the 6502's 16bit address bus). 
+Note that the Atari 2600 uses the 6507, a variant of the NMOS 6502, equipped with a 12bit (4096B) address bus (as opposed to the 6502's 16bit address bus). 
 
 Using a 6502 emulator core, as opposed to a 6507 core (and simply stripping away the unused functionality) is done for expandability and modularity: if this code works, it will hopefully one day be used to design a NES Emulator. 
 
