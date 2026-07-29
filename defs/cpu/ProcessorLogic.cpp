@@ -24,9 +24,13 @@ class InstructionDecoder : DecoderHelpers {
 public:
 // constructor where references to ressources are passed 
     InstructionDecoder(RegisterFile& CPURF,  OpCodeTableMap& CPUOpCMap, ChipType CPUType = ChipType::NMOS6502) : RF(CPURF), OpCMap(CPUOpCMap), CpuTypeFamily(CPUType){};
+
+private: 
+    
 // Setting this as PROTECTED because this will be inherinted by Processor class. These are individual instruction handlers (eg LDA, LDX...)
 protected:
     void ADC(Instruction instr){
+        uint8_t byteCount, cycleCount;
 
     }
 
