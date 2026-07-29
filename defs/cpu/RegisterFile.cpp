@@ -1,61 +1,49 @@
-// Registers.h
+// Registers.cpp
 
-#pragma once
-
-#include <cpu/RegisterFile.h>
 #include <stdint.h>
+#include <cpu/RegisterFile.h>
 
-class RegisterFile {
-public:
-    struct Register {
-        uint8_t value = 0;
+// Define Implementations for the registers now
 
-        void Clear() {
-            value = 0;
-        }
-    };
+// GPR General Purpose CPU Registers (eg A, X, Y)
+uint8_t Register::read() const {return value;};
+void Register::write(uint8_t data) {value = data;};
 
-    struct StatusRegister{
-        uint8_t status = 0; //FIXME: check what the default 6502 init is for status registers
-    };
+// SR Status Register
+uint8_t StatusRegister::read() const{return status;};
+void StatusRegister::write(uint8_t SR) {status = SR;};
 
-    struct ProgramCounter{
-        // FIXME: check 6502 init
-        uint8_t PCH = 0; // PC High byte (lower address in BE convention)
-        uint8_t PCL = 0; // PC Low byte (higher address in BE convention)
-        uint16_t PC = 0;
-
-        // ISSUE: these values should not be handled directly to avoid sync issues, so prefferable to read/write via methods
-        void IncrementPC(int PCoffset = 2) {
-            PC = PC + PCoffset; //classically, this is PC +2
-            // extract bit fields
-            PCH = (PC >> 8) & 0x00FF; // AND with 0b1111.1111.0000.0000 to get upper byte
-            PCL = PC & 0x00FF; // AND with 0b000.0000.1111.1111 to get lower byte
-        };
-
-        uint16_t ComputePCOffset(int PCOffset){
-            // Compute PC offset at PC + N and returns value but does NOT commit/increment PC
-            uint16_t nextPC;
-            nextPC = PC + PCOffset;
-            return nextPC;
-        };
-    };
-
-    struct StatusRegister{
-        uint8_t status; /// CHECK 6502 init later
-        // maybe add set/clear routines here later, for now this is simple wrapper
-    };
-
-    struct StackPointer{
-        uint16_t stack_address; // check default 6502 stack pointer here
-        // FIXME: check stack conventions for 6502 here later
-    };
-    // General purpose registers
-    Register A; // Accumulator
-    Register X; // Index Register X
-    Register Y; // Index Register Y
-    // Special registers
-    ProgramCounter PC; // Program counter
-    StatusRegister SR; // Status Register
-    StackPointer SP; // Stack Pointer
+bool StatusRegister::readFlag(StatusFlag flag) const{
+    // Statusflag, cast to uint8, acts as a mask
+    uint8_t mask = static_cast<uint8_t>(flag); //convert to uint, eg 0b00001000
+    uint8_t flagRaw8b = status | mask;
+    return flagRaw8b != 0x00;
 };
+
+void StatusRegister::writeFlag(StatusFlag flag, bool value){
+    uint8_t mask = static_cast<uint8_t>(flag); //convert to uint, eg 0b00001000
+    status = (status & ~mask) | (value ? mask : 0); // AND the existing SR value with the complement/inverse of the MASK, which sets the masked bit to 0. Then set that bit via OR depending on the value we want to write
+}
+
+// SP Stack Pointer
+// Set new PC head
+void StackPointer::write(uint8_t stackHead){value = 0x01 | stackHead;}; // NOTE: the 6502 stack lives between 0x0100-0x01FF in RAM, with SP operations using 8b, implying the stack address
+uint8_t StackPointer::read() const{return static_cast<uint8_t>(value | 0x00FF);};// fetch address pointed to by SP
+void StackPointer::decrementSPHead(uint8_t offset){value = value - offset;};
+void StackPointer::incrementSPHead(uint8_t offset){value = value + offset;};
+
+
+//PC Program Counter
+void ProgramCounter::splitPCHighLow(uint16_t value){
+    // private function. Sets PC to value and PCH/PCL to upper and lower bytes of value repsectively
+    PC = value;
+    PCL = 0x00FF | value;
+    PCH = (0xFF00 | value) >> 8;
+};
+
+void ProgramCounter::write(uint16_t newPC){splitPCHighLow(newPC);};
+void ProgramCounter::incrementPC(uint8_t offset){splitPCHighLow((PC + static_cast<uint16_t>(offset)));};
+void ProgramCounter::decrementPC(uint8_t offset){splitPCHighLow((PC - static_cast<uint16_t>(offset)));};
+uint16_t ProgramCounter::readPC() const {return PC;};
+uint8_t ProgramCounter::readPCH() const {return PCH;};
+uint8_t ProgramCounter::readPCL() const {return PCL;};

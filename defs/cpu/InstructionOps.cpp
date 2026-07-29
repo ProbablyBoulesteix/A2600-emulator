@@ -6,6 +6,11 @@
 */
 
 #include <cpu/InstructionOps.h>
+#include <array>
+#include <stdint.h>
+#include <stdlib.h>
+#include <cpu/InstructionTypes.h>
+#include <cpu/CPU.h>
 
 
 std::array<Instruction, 256> makeOpCodeTable(){

@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # External dependencies
 
 # Source files
-add_executable(A2600_emulator defs/cpu/InstructionOps.cpp)
+add_executable(A2600_emulator src/CPU/main.cpp)
 
 # Internal dependencies/imports
 target_include_directories(A2600_emulator PRIVATE include, defs)
