@@ -28,11 +28,11 @@ public:
     
     
     uint8_t getPageIDFromAddress(uint16_t address) {uint8_t pageID = fetchByteFromWord16b(address, byteSignificance::HIGH);}; //MS byte of address is page ID};
-    std::vector<uint8_t>  fetchBytes(uint16_t address, uint8_t byteCount, CPUEndianness endianConvention = CPUEndianness::BIG) const { //fetch the N bytes from the provided memory address, ascending, returning them in order based on convention
-        // NOTE/FIXME: endianness does nothing here, which is because 6502 is BE, but maybe extend this later
+    std::vector<uint8_t>  fetchBytes(uint16_t address, uint8_t byteCount, CPUEndianness endianConvention = CPUEndianness::LITTLE) const { //fetch the N bytes from the provided memory address, ascending, returning them in order based on convention
+        // NOTE/FIXME: endianness does nothing here, which is because 6502 is LE, but maybe extend this later
         std::vector<uint8_t> buffer(byteCount); // store entries here
         for (int i = 0; i < byteCount; i++) {
-            buffer[i] = ramBuffer[address + i]; //iterate through RAM buffer and place in buffer here
+            buffer[byteCount - i] = ramBuffer[address + i]; //iterate through RAM buffer and place in buffer here. This inversion means that opcode is placed first (index 0) with addresses and such appearing in order
         };
     };
     uint8_t readByte(uint16_t address) const {
@@ -47,11 +47,11 @@ public:
 
     void writeByte(uint16_t address, uint8_t dataByte){ramBuffer[address] = dataByte;};
     void writeWord16b(uint16_t address, uint16_t dataWord){
-        uint8_t highByte = fetchByteFromWord16b(dataWord, byteSignificance::HIGH); // BE convention: MSB/High is lower in memory address terms
-        uint8_t lowByte = fetchByteFromWord16b(dataWord, byteSignificance::LOW); // BE convention: LOW byte at higher address
+        uint8_t highByte = fetchByteFromWord16b(dataWord, byteSignificance::HIGH);
+        uint8_t lowByte = fetchByteFromWord16b(dataWord, byteSignificance::LOW); 
         //now write
-        ramBuffer[address] = highByte; //BE convention
-        ramBuffer[address + 1] = lowByte;
+        ramBuffer[address + 1] = highByte; // LE convention: MSB in higher address
+        ramBuffer[address] = lowByte;
     };
 
 };

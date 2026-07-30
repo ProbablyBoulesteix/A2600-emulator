@@ -10,6 +10,7 @@ uint8_t Register::read() const {return value;};
 void Register::write(uint8_t data) {value = data;};
 
 // SR Status Register
+
 uint8_t StatusRegister::read() const{return status;};
 void StatusRegister::write(uint8_t SR) {status = SR;};
 
@@ -24,6 +25,29 @@ void StatusRegister::writeFlag(StatusFlag flag, bool value){
     uint8_t mask = static_cast<uint8_t>(flag); //convert to uint, eg 0b00001000
     status = (status & ~mask) | (value ? mask : 0); // AND the existing SR value with the complement/inverse of the MASK, which sets the masked bit to 0. Then set that bit via OR depending on the value we want to write
 }
+
+void StatusRegister::setZN(uint8_t value){
+    StatusRegister::writeFlag(StatusFlag::Z, value == 0); //default --> set to 0 if the result is 0
+    StatusRegister::writeFlag(StatusFlag::N, value & 0x80); //checks MSB
+};
+
+
+void StatusRegister::commitFlags(const Instruction& instr, const ResolvedInfoInstruction& instrMetaData){
+    // Check flag mask encoded in instruction and commit new data once checked
+    FlagMask w = instr.writeFlags; // which flags are writable?
+    if ((w & static_cast<FlagMask>(StatusFlag::Z)) ||(w & static_cast<FlagMask>(StatusFlag::N))) {
+        instrMetaData.znSource.has_value();
+        StatusRegister::setZN(*instrMetaData.znSource); //Update status register using source byte provided
+    };
+    if (w & static_cast<FlagMask>(StatusFlag::C)) {
+        instrMetaData.carry.has_value();
+        StatusRegister::writeFlag(StatusFlag::C, *instrMetaData.carry);
+    };
+    if (w & static_cast<FlagMask>(StatusFlag::V)) {
+        instrMetaData.overflow.has_value();
+        StatusRegister::writeFlag(StatusFlag::V, *instrMetaData.overflow);
+    };
+};
 
 // SP Stack Pointer
 // Set new PC head

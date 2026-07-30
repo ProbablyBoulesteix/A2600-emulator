@@ -3,6 +3,7 @@
 #pragma once
 #include <stdint.h>
 #include <cpu/InstructionTypes.h>
+#include <cpu/ProcessorLogic.h>
 
 
 // LOGICAL PRINCIPLE/ AUTHORS NOTE:  MOST 6502 registers have particular semantics, eg how the PC is split into smaller PCH/PCL fields. 
@@ -24,6 +25,8 @@ public:
     void write(uint8_t SR); //write raw 8b SR
     bool readFlag(StatusFlag flag) const; //read particular flag
     void writeFlag(StatusFlag flag, bool value); //write particular flag
+    void setZN(uint8_t value);
+    void commitFlags(const Instruction& instr, const ResolvedInfoInstruction& instrMetaData);
 };
 
 struct StackPointer {
